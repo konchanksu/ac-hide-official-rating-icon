@@ -1,0 +1,19 @@
+{
+  "name": "ac-hide-official-rating-icon",
+  "version": "0.1.0",
+  "description": "AtCoder公式のレーティングアイコンを非表示にできるようにする拡張機能",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "konchanksu",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
+    "eslint": "^9.6.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.2"
+  }
+}
