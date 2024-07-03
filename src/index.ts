@@ -27,11 +27,28 @@ function hideIcons(): void {
   });
 }
 
+function viewHeaderSetting(): void {
+  const headerMyPageList = document.getElementsByClassName('dropdown-menu')[1];
+
+  const newElement = createHeaderSettingElement();
+
+  const positionIndex = 6;
+
+  if (positionIndex >= headerMyPageList.children.length) {
+    headerMyPageList.appendChild(newElement);
+  } else {
+    headerMyPageList.insertBefore(
+      newElement,
+      headerMyPageList.children[positionIndex],
+    );
+  }
+}
+
 function viewHeaderSettingInProfile(): void {
   const headerMyPageList =
     document.getElementsByClassName('header-mypage_list')[0];
 
-  const newElement = createHeaderSettingElement();
+  const newElement = createHeaderSettingElementInProfile();
 
   const positionIndex = 5;
 
@@ -46,6 +63,23 @@ function viewHeaderSettingInProfile(): void {
 }
 
 function createHeaderSettingElement(): HTMLLIElement {
+  const element = document.createElement('li');
+  const innerATag = document.createElement('a');
+  const innerSpanTag = document.createElement('span');
+  const text = document.createTextNode(' ac-hide-icon 設定');
+
+  element.appendChild(innerATag);
+  innerATag.appendChild(innerSpanTag);
+  innerATag.appendChild(text);
+
+  ['glyphicon', 'glyphicon-wrench'].forEach((tag) =>
+    innerSpanTag.classList.add(tag),
+  );
+
+  return element;
+}
+
+function createHeaderSettingElementInProfile(): HTMLLIElement {
   const element = document.createElement('li');
   const innerATag = document.createElement('a');
   const innerITag = document.createElement('i');
@@ -100,6 +134,8 @@ function main() {
 
   if (url.match(/.*\/users\/.*/)) {
     viewHeaderSettingInProfile();
+  } else {
+    viewHeaderSetting();
   }
 }
 
