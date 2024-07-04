@@ -31,11 +31,21 @@ const CURRENT_LANGUAGE: LANGUAGE = (() => {
 
 const IS_CURRENT_LANGUAGE_JA = CURRENT_LANGUAGE === 'JA';
 
-const CONFIG_DROPDOWN = IS_CURRENT_LANGUAGE_JA
-  ? ' ac-hide-icon 設定'
-  : ' ac-hide-icon';
+const CONFIG_DROPDOWN_JA = {
+  title: ' ac-hide-icon 設定',
+  showRatingIconFg: 'レーティングアイコンを表示する',
+};
 
-const MODAL_HTML = `<div id="modal-ac-hide-icon-settings" class="modal fade" tabindex="-1" role="dialog">
+const CONFIG_DROPDOWN_EN = {
+  title: ' ac-hide-icon',
+  showRatingIconFg: '',
+};
+
+const CONFIG_DROPDOWN = IS_CURRENT_LANGUAGE_JA
+  ? CONFIG_DROPDOWN_JA
+  : CONFIG_DROPDOWN_EN;
+
+const MODAL_HTML_BASE = `<div id="modal-ac-hide-icon-settings" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -43,12 +53,13 @@ const MODAL_HTML = `<div id="modal-ac-hide-icon-settings" class="modal fade" tab
           <span aria-hidden="true">×</span>
         </button>
         <h4 class="modal-title">
-          ${CONFIG_DROPDOWN}
+          ${CONFIG_DROPDOWN['title']}
         </h4>
       </div>
     <div class="modal-body">
       <div class="container-fluid">
-        <div class="settings-row" class="row"></div>
+        <div class="settings-row row" id="ac-hide-rating-icon-checkboxes">
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -56,6 +67,32 @@ const MODAL_HTML = `<div id="modal-ac-hide-icon-settings" class="modal fade" tab
     </div>
   </div>
 </div>`;
+
+const CHECKBOX_HTML_BASE = (text: string, id: string): string =>
+  `<div class="checkbox">
+    <label>
+      <input type="checkbox" id="${id}"> ${text}
+    </label>
+  </div>`;
+
+function createCheckbox() {
+  const checkboxText = CHECKBOX_HTML_BASE(
+    CONFIG_DROPDOWN['showRatingIconFg'],
+    'show-rating-icon',
+  );
+
+  document
+    .querySelector('#ac-hide-rating-icon-checkboxes')
+    ?.insertAdjacentHTML('afterbegin', checkboxText);
+}
+
+function createModal() {
+  document
+    .querySelector('body')
+    ?.insertAdjacentHTML('afterbegin', MODAL_HTML_BASE);
+
+  createCheckbox();
+}
 
 function hideIcons(): void {
   RATING_ICON_CLASSES.forEach((ratingIconClass: string) => {
@@ -125,17 +162,13 @@ function createIcon(): HTMLElement {
 
 function createHeaderATag(): HTMLElement {
   const aTag = document.createElement('a');
-  const text = document.createTextNode(CONFIG_DROPDOWN);
+  const text = document.createTextNode(CONFIG_DROPDOWN['title']);
 
   aTag.appendChild(text);
   aTag.setAttribute('data-toggle', 'modal');
   aTag.setAttribute('data-target', '#modal-ac-hide-icon-settings');
 
   return aTag;
-}
-
-function createModal() {
-  document.querySelector('body')?.insertAdjacentHTML('afterbegin', MODAL_HTML);
 }
 
 function createHeaderSettingElement(): HTMLLIElement {
