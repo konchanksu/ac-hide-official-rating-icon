@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outFile": "./dist/index.js", // 出力ファイルのパスと名前
+    "module": "system", // モジュールシステムをSystemJSに設定
+    "target": "ES6", // 出力のJavaScriptのバージョン
+    "sourceMap": true // ソースマップの生成（任意）
+  },
+  "include": [
+    "./src/**/*.ts" // コンパイル対象のTypeScriptファイル
+  ]
+}
