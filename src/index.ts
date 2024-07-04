@@ -35,8 +35,27 @@ const CONFIG_DROPDOWN = IS_CURRENT_LANGUAGE_JA
   ? ' ac-hide-icon 設定'
   : ' ac-hide-icon';
 
-var modalHTML =
-  '<div id="modal-ac-hide-rate-icon-settings" class="modal fade" tabindex="-1" role="dialog">\n\t<div class="modal-dialog" role="document">\n\t<div class="modal-content">\n\t\t<div class="modal-header">\n\t\t\t<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>\n\t\t\t<h4 class="modal-title">{config_header_text}</h4>\n\t\t</div>\n\t\t<div class="modal-body">\n\t\t\t<div class="container-fluid">\n\t\t\t\t<div class="settings-row" class="row">\n\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="modal-footer">\n\t\t\t<button type="button" class="btn btn-default" data-dismiss="modal">close</button>\n\t\t</div>\n\t</div>\n</div>\n</div>';
+const MODAL_HTML = `<div id="modal-ac-hide-icon-settings" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+        <h4 class="modal-title">
+          ${CONFIG_DROPDOWN}
+        </h4>
+      </div>
+    <div class="modal-body">
+      <div class="container-fluid">
+        <div class="settings-row" class="row"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+    </div>
+  </div>
+</div>`;
 
 function hideIcons(): void {
   RATING_ICON_CLASSES.forEach((ratingIconClass: string) => {
@@ -104,33 +123,42 @@ function createIcon(): HTMLElement {
   return innerITag;
 }
 
-function createHeaderSettingElement(): HTMLLIElement {
-  const element = document.createElement('li');
-  const innerATag = document.createElement('a');
-  const innerSpanTag = createGlyphicon();
+function createHeaderATag(): HTMLElement {
+  const aTag = document.createElement('a');
   const text = document.createTextNode(CONFIG_DROPDOWN);
 
+  aTag.appendChild(text);
+  aTag.setAttribute('data-toggle', 'modal');
+  aTag.setAttribute('data-target', '#modal-ac-hide-icon-settings');
+
+  return aTag;
+}
+
+function createModal() {
+  document.querySelector('body')?.insertAdjacentHTML('afterbegin', MODAL_HTML);
+}
+
+function createHeaderSettingElement(): HTMLLIElement {
+  const element = document.createElement('li');
+  const innerATag = createHeaderATag();
+  const innerSpanTag = createGlyphicon();
+
   element.appendChild(innerATag);
-  innerATag.appendChild(innerSpanTag);
-  innerATag.appendChild(text);
+  innerATag.insertBefore(innerSpanTag, innerATag.firstChild);
 
   return element;
 }
 
 function createHeaderSettingElementInProfile(): HTMLLIElement {
   const element = document.createElement('li');
-  const innerATag = document.createElement('a');
+  const innerATag = createHeaderATag();
   const innerTag = IS_CURRENT_LANGUAGE_JA ? createIcon() : createGlyphicon();
-  const text = document.createTextNode(CONFIG_DROPDOWN);
 
   element.appendChild(innerATag);
-  innerATag.appendChild(innerTag);
-  innerATag.appendChild(text);
+  innerATag.insertBefore(innerTag, innerATag.firstChild);
 
   return element;
 }
-
-function createModal() {}
 
 function observeLoadingHideClassForStandings() {
   const target = document.getElementsByClassName('loading-hide');
@@ -163,6 +191,7 @@ function observeStandings() {
 
 function main() {
   hideIcons();
+  createModal();
 
   const url = window.location.href;
 
