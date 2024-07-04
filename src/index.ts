@@ -18,8 +18,6 @@ const RATING_ICON_CLASSES = [
   'user-rating-stage-s',
 ];
 
-const CONFIG_DROPDOWN = ' ac-hide-icon 設定';
-
 const CURRENT_LANGUAGE: LANGUAGE = (() => {
   const dropdown_toggle = document.getElementsByClassName('dropdown-toggle');
 
@@ -32,6 +30,10 @@ const CURRENT_LANGUAGE: LANGUAGE = (() => {
 })();
 
 const IS_CURRENT_LANGUAGE_JA = CURRENT_LANGUAGE === 'JA';
+
+const CONFIG_DROPDOWN = IS_CURRENT_LANGUAGE_JA
+  ? ' ac-hide-icon 設定'
+  : ' ac-hide-icon';
 
 var modalHTML =
   '<div id="modal-ac-hide-rate-icon-settings" class="modal fade" tabindex="-1" role="dialog">\n\t<div class="modal-dialog" role="document">\n\t<div class="modal-content">\n\t\t<div class="modal-header">\n\t\t\t<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>\n\t\t\t<h4 class="modal-title">{config_header_text}</h4>\n\t\t</div>\n\t\t<div class="modal-body">\n\t\t\t<div class="container-fluid">\n\t\t\t\t<div class="settings-row" class="row">\n\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="modal-footer">\n\t\t\t<button type="button" class="btn btn-default" data-dismiss="modal">close</button>\n\t\t</div>\n\t</div>\n</div>\n</div>';
