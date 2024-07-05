@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ac-hide-official-rating-icon
 // @namespace    https://atcoder.jp/
-// @version      1.0
+// @version      1.01
 // @description  AtCoder公式のレーティングアイコンを非表示にできるようにする拡張機能
 // @author       konchanksu
 // @license      MIT
@@ -303,11 +303,12 @@ function checkAndHideIcons(): void {
   const url = window.location.href;
 
   controlIcons(
-    !showRatingIconFg || (url.match(/.*users.*/) && !showRatingIconProfileFg),
+    !showRatingIconFg ||
+      (url.match(/.*users.*/) !== null && !showRatingIconProfileFg),
   );
 
   if (url.match(/.*standings/g)) {
-    observeLoadingHideClassForStandings(showRatingIconFg);
+    observeLoadingHideClassForStandings(!showRatingIconFg);
   }
 }
 
