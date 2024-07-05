@@ -1,19 +1,14 @@
 // ==UserScript==
-// @name         新規スクリプト
+// @name         ac-hide-official-rating-icon
 // @namespace    https://atcoder.jp/
-// @version      0.1
+// @version      1.0
 // @description  AtCoder公式のレーティングアイコンを非表示にできるようにする拡張機能
 // @author       konchanksu
 // @match        https://atcoder.jp/*
 // @grant        none
 // ==/UserScript==
 
-//ac-hide-official-rating-icon
-
-import {
-  LocalStorageController,
-  SHOW_RATING_ICON_FG,
-} from './localStorageController';
+import { LocalStorageController } from './localStorageController';
 
 type Language = 'EN' | 'JA';
 
