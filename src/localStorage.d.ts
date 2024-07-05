@@ -1,7 +1,4 @@
 type LocalStorageState = {
   showRatingIconFg: boolean;
+  showRatingIconProfileFg: boolean;
 };
-
-interface LocalStorageController {
-  showRatingIconFg: boolean;
-}

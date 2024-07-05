@@ -15,7 +15,14 @@ import {
   SHOW_RATING_ICON_FG,
 } from './localStorageController';
 
-type LANGUAGE = 'EN' | 'JA';
+type Language = 'EN' | 'JA';
+
+type RadioButtonState = {
+  title: string;
+  id: string;
+  showRatingIconFg: boolean;
+  showRatingIconProfileFg: boolean;
+};
 
 const RATING_ICON_CLASSES = [
   'user-rating-stage-l',
@@ -23,9 +30,7 @@ const RATING_ICON_CLASSES = [
   'user-rating-stage-s',
 ];
 
-const CHECKBOX_STATE_KEY = 'ac-hide-rating-icon-config';
-
-const CURRENT_LANGUAGE: LANGUAGE = (() => {
+const CURRENT_LANGUAGE: Language = (() => {
   const dropdown_toggle = document.getElementsByClassName('dropdown-toggle');
 
   const isIncludeEn =
@@ -33,14 +38,33 @@ const CURRENT_LANGUAGE: LANGUAGE = (() => {
       element.textContent.includes('English'),
     ).length !== 0;
 
-  return isIncludeEn ? ('EN' as LANGUAGE) : ('JA' as LANGUAGE); // default JA
+  return isIncludeEn ? ('EN' as Language) : ('JA' as Language); // default JA
 })();
 
 const IS_CURRENT_LANGUAGE_JA = CURRENT_LANGUAGE === 'JA';
 
-const CONFIG_DROPDOWN_JA = {
+const CONFIG_DROPDOWN_JA: { title: string; radio: RadioButtonState[] } = {
   title: ' ac-hide-icon 設定',
-  showRatingIconFg: 'レーティングアイコンを表示する',
+  radio: [
+    {
+      title: 'レーティングアイコンを非表示にしない',
+      id: 'any',
+      showRatingIconFg: true,
+      showRatingIconProfileFg: true,
+    },
+    {
+      title: 'プロフィールページのみ非表示にする',
+      id: 'only-not-standings',
+      showRatingIconFg: true,
+      showRatingIconProfileFg: false,
+    },
+    {
+      title: 'レーティングアイコンを全て非表示にする',
+      id: 'all',
+      showRatingIconFg: false,
+      showRatingIconProfileFg: false,
+    },
+  ],
 };
 
 const CONFIG_DROPDOWN_EN = {
@@ -65,7 +89,7 @@ const MODAL_HTML_BASE = `<div id="modal-ac-hide-icon-settings" class="modal fade
       </div>
     <div class="modal-body">
       <div class="container-fluid">
-        <div class="settings-row row" id="ac-hide-rating-icon-checkboxes">
+        <div class="settings-row row" id="ac-hide-rating-icon-radio">
         </div>
       </div>
     </div>
@@ -75,30 +99,52 @@ const MODAL_HTML_BASE = `<div id="modal-ac-hide-icon-settings" class="modal fade
   </div>
 </div>`;
 
-const CHECKBOX_HTML_BASE = (text: string, id: string): string =>
-  `<div class="checkbox">
-    <label>
-      <input type="checkbox" id="${id}"> ${text}
+const RADIO_HTML_BASE = (text: string, id: string): string =>
+  `<div class="radio">
+    <label>\
+      <input type="radio" name="ac-hide-rating-icon-config" id="ac-hide-rating-icon-${id}" required> ${text}
     </label>
   </div>`;
 
-const LocalStorageStateInstance = new LocalStorageController();
+const localStorageController = new LocalStorageController();
 
 function isDropDownMenu() {
   return document.getElementsByClassName('dropdown-menu').length > 1;
 }
 
 function createCheckbox() {
-  const checkboxText = CHECKBOX_HTML_BASE(
-    CONFIG_DROPDOWN[SHOW_RATING_ICON_FG],
-    SHOW_RATING_ICON_FG,
-  );
+  const radioState = localStorageController.getRadioState();
 
-  document
-    .querySelector('#ac-hide-rating-icon-checkboxes')
-    ?.insertAdjacentHTML('afterbegin', checkboxText);
+  CONFIG_DROPDOWN['radio'].forEach((element) => {
+    const { title, id, showRatingIconFg, showRatingIconProfileFg } = element;
+    const radio = RADIO_HTML_BASE(title, id);
 
-  const checkbox = document.getElementById(SHOW_RATING_ICON_FG);
+    document
+      .querySelector('#ac-hide-rating-icon-radio')
+      ?.insertAdjacentHTML('afterbegin', radio);
+
+    const currentRadio = document.getElementById(
+      `ac-hide-rating-icon-${id}`,
+    ) as HTMLInputElement;
+
+    currentRadio.addEventListener('click', () => {
+      localStorageController.saveRadioState({
+        showRatingIconFg,
+        showRatingIconProfileFg,
+      });
+      currentRadio.checked = true;
+      checkAndHideIcons();
+    });
+
+    console.log(radioState, showRatingIconFg, showRatingIconProfileFg);
+
+    if (
+      radioState['showRatingIconFg'] === showRatingIconFg &&
+      radioState['showRatingIconProfileFg'] === showRatingIconProfileFg
+    ) {
+      currentRadio.checked = true;
+    }
+  });
 }
 
 function createModal() {
@@ -109,13 +155,13 @@ function createModal() {
   createCheckbox();
 }
 
-function hideIcons(): void {
+function controlIcons(hideFg: boolean): void {
   RATING_ICON_CLASSES.forEach((ratingIconClass: string) => {
     const ratingIcons: HTMLCollection =
       document.getElementsByClassName(ratingIconClass);
 
     Array.prototype.forEach.call(ratingIcons, (element) => {
-      element.style.display = 'none';
+      element.style.display = hideFg ? 'none' : 'unset';
     });
   });
 }
@@ -206,14 +252,14 @@ function createHeaderSettingElement(): HTMLLIElement {
   return element;
 }
 
-function observeLoadingHideClassForStandings() {
+function observeLoadingHideClassForStandings(): void {
   const target = document.getElementsByClassName('loading-hide');
 
   if (target) {
     const observer = new MutationObserver(() => {
       // 読み込み後は standings-tbody に順位情報が格納されるため、それを参照する
       observeStandings();
-      hideIcons();
+      controlIcons(true);
     });
     observer.observe(target[1], {
       childList: true,
@@ -222,12 +268,12 @@ function observeLoadingHideClassForStandings() {
   }
 }
 
-function observeStandings() {
+function observeStandings(): void {
   const target = document.getElementById('standings-tbody');
 
   if (target) {
     const observer = new MutationObserver(() => {
-      hideIcons();
+      controlIcons(true);
     });
     observer.observe(target, {
       childList: true,
@@ -235,16 +281,25 @@ function observeStandings() {
   }
 }
 
-function main() {
-  hideIcons();
-  createModal();
-
+function checkAndHideIcons(): void {
+  const { showRatingIconFg, showRatingIconProfileFg } =
+    localStorageController.getRadioState();
   const url = window.location.href;
 
-  if (url.match(/.*standings/g)) {
+  controlIcons(
+    !showRatingIconFg || (url.match(/.*users.*/) && !showRatingIconProfileFg),
+  );
+
+  if (url.match(/.*standings/g) && !showRatingIconFg) {
     observeLoadingHideClassForStandings();
   }
+}
 
+function main(): void {
+  checkAndHideIcons();
+
+  // 設定作る系
+  createModal();
   if (isDropDownMenu()) {
     showHeaderSettingForDropDown();
   } else {
