@@ -10,6 +10,11 @@
 
 //ac-hide-official-rating-icon
 
+import {
+  LocalStorageController,
+  SHOW_RATING_ICON_FG,
+} from './localStorageController';
+
 type LANGUAGE = 'EN' | 'JA';
 
 const RATING_ICON_CLASSES = [
@@ -17,6 +22,8 @@ const RATING_ICON_CLASSES = [
   'user-rating-stage-m',
   'user-rating-stage-s',
 ];
+
+const CHECKBOX_STATE_KEY = 'ac-hide-rating-icon-config';
 
 const CURRENT_LANGUAGE: LANGUAGE = (() => {
   const dropdown_toggle = document.getElementsByClassName('dropdown-toggle');
@@ -75,15 +82,23 @@ const CHECKBOX_HTML_BASE = (text: string, id: string): string =>
     </label>
   </div>`;
 
+const LocalStorageStateInstance = new LocalStorageController();
+
+function isDropDownMenu() {
+  return document.getElementsByClassName('dropdown-menu').length > 1;
+}
+
 function createCheckbox() {
   const checkboxText = CHECKBOX_HTML_BASE(
-    CONFIG_DROPDOWN['showRatingIconFg'],
-    'show-rating-icon',
+    CONFIG_DROPDOWN[SHOW_RATING_ICON_FG],
+    SHOW_RATING_ICON_FG,
   );
 
   document
     .querySelector('#ac-hide-rating-icon-checkboxes')
     ?.insertAdjacentHTML('afterbegin', checkboxText);
+
+  const checkbox = document.getElementById(SHOW_RATING_ICON_FG);
 }
 
 function createModal() {
@@ -105,10 +120,9 @@ function hideIcons(): void {
   });
 }
 
-function viewHeaderSetting(): void {
+function showHeaderSettingForDropDown(): void {
   const headerMyPageList = document.getElementsByClassName('dropdown-menu')[1];
-
-  const newElement = createHeaderSettingElement();
+  const newElement = createHeaderSettingElementForDropDown();
 
   const positionIndex = 6;
 
@@ -122,13 +136,12 @@ function viewHeaderSetting(): void {
   }
 }
 
-function viewHeaderSettingInProfile(): void {
-  const headerMyPageList = IS_CURRENT_LANGUAGE_JA
-    ? document.getElementsByClassName('header-mypage_list')[0]
-    : document.getElementsByClassName('dropdown-menu')[1];
+function showHeaderSetting(): void {
+  const headerMyPageList =
+    document.getElementsByClassName('header-mypage_list')[0];
 
-  const newElement = createHeaderSettingElementInProfile();
-  const positionIndex = IS_CURRENT_LANGUAGE_JA ? 5 : 6;
+  const newElement = createHeaderSettingElement();
+  const positionIndex = 5;
 
   if (headerMyPageList) {
     if (positionIndex >= headerMyPageList.children.length) {
@@ -171,7 +184,7 @@ function createHeaderATag(): HTMLElement {
   return aTag;
 }
 
-function createHeaderSettingElement(): HTMLLIElement {
+function createHeaderSettingElementForDropDown(): HTMLLIElement {
   const element = document.createElement('li');
   const innerATag = createHeaderATag();
   const innerSpanTag = createGlyphicon();
@@ -182,7 +195,7 @@ function createHeaderSettingElement(): HTMLLIElement {
   return element;
 }
 
-function createHeaderSettingElementInProfile(): HTMLLIElement {
+function createHeaderSettingElement(): HTMLLIElement {
   const element = document.createElement('li');
   const innerATag = createHeaderATag();
   const innerTag = IS_CURRENT_LANGUAGE_JA ? createIcon() : createGlyphicon();
@@ -232,10 +245,10 @@ function main() {
     observeLoadingHideClassForStandings();
   }
 
-  if (url.match(/.*\/users\/.*/)) {
-    viewHeaderSettingInProfile();
+  if (isDropDownMenu()) {
+    showHeaderSettingForDropDown();
   } else {
-    viewHeaderSetting();
+    showHeaderSetting();
   }
 }
 
