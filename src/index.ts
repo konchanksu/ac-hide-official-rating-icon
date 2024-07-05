@@ -4,6 +4,7 @@
 // @version      1.0
 // @description  AtCoder公式のレーティングアイコンを非表示にできるようにする拡張機能
 // @author       konchanksu
+// @license      MIT
 // @match        https://atcoder.jp/*
 // @grant        none
 // ==/UserScript==
