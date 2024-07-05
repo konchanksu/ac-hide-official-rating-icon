@@ -69,7 +69,26 @@ const CONFIG_DROPDOWN_JA: { title: string; radio: RadioButtonState[] } = {
 
 const CONFIG_DROPDOWN_EN = {
   title: ' ac-hide-icon',
-  showRatingIconFg: '',
+  radio: [
+    {
+      title: 'show the rating icon',
+      id: 'any',
+      showRatingIconFg: true,
+      showRatingIconProfileFg: true,
+    },
+    {
+      title: 'hide the rating icon only on the profile page',
+      id: 'only-not-standings',
+      showRatingIconFg: true,
+      showRatingIconProfileFg: false,
+    },
+    {
+      title: 'hide the rating icon',
+      id: 'all',
+      showRatingIconFg: false,
+      showRatingIconProfileFg: false,
+    },
+  ],
 };
 
 const CONFIG_DROPDOWN = IS_CURRENT_LANGUAGE_JA
@@ -109,10 +128,13 @@ const RADIO_HTML_BASE = (text: string, id: string): string =>
 const localStorageController = new LocalStorageController();
 
 function isDropDownMenu() {
-  return document.getElementsByClassName('dropdown-menu').length > 1;
+  return (
+    document.getElementsByClassName('header-mypage_btn').length === 0 ||
+    CURRENT_LANGUAGE === 'EN'
+  );
 }
 
-function createCheckbox() {
+function createRadio() {
   const radioState = localStorageController.getRadioState();
 
   CONFIG_DROPDOWN['radio'].forEach((element) => {
@@ -150,7 +172,7 @@ function createModal() {
     .querySelector('body')
     ?.insertAdjacentHTML('afterbegin', MODAL_HTML_BASE);
 
-  createCheckbox();
+  createRadio();
 }
 
 function controlIcons(hideFg: boolean): void {
