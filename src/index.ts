@@ -136,8 +136,6 @@ function createCheckbox() {
       checkAndHideIcons();
     });
 
-    console.log(radioState, showRatingIconFg, showRatingIconProfileFg);
-
     if (
       radioState['showRatingIconFg'] === showRatingIconFg &&
       radioState['showRatingIconProfileFg'] === showRatingIconProfileFg
@@ -252,28 +250,28 @@ function createHeaderSettingElement(): HTMLLIElement {
   return element;
 }
 
-function observeLoadingHideClassForStandings(): void {
+function observeLoadingHideClassForStandings(hide: boolean): void {
   const target = document.getElementsByClassName('loading-hide');
 
   if (target) {
     const observer = new MutationObserver(() => {
       // 読み込み後は standings-tbody に順位情報が格納されるため、それを参照する
-      observeStandings();
-      controlIcons(true);
+      observeStandings(hide);
+      controlIcons(hide);
     });
     observer.observe(target[1], {
       childList: true,
     });
-    observeStandings();
+    observeStandings(hide);
   }
 }
 
-function observeStandings(): void {
+function observeStandings(hide: boolean): void {
   const target = document.getElementById('standings-tbody');
 
   if (target) {
     const observer = new MutationObserver(() => {
-      controlIcons(true);
+      controlIcons(hide);
     });
     observer.observe(target, {
       childList: true,
@@ -290,8 +288,8 @@ function checkAndHideIcons(): void {
     !showRatingIconFg || (url.match(/.*users.*/) && !showRatingIconProfileFg),
   );
 
-  if (url.match(/.*standings/g) && !showRatingIconFg) {
-    observeLoadingHideClassForStandings();
+  if (url.match(/.*standings/g)) {
+    observeLoadingHideClassForStandings(showRatingIconFg);
   }
 }
 
