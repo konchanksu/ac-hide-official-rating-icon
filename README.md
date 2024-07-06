@@ -1,5 +1,5 @@
 # ac-hide-official-rating-icon
-AtCoder公式のレーティングアイコンを非表示にできるようにするユーザスクリプトです。
+AtCoderのレーティングアイコンを非表示にできるようにするユーザスクリプトです。
 
 | before | after |
 | --- | --- |
