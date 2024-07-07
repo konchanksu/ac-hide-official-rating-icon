@@ -9,6 +9,12 @@ class LocalStorageController {
 
   constructor() {
     this.changeState = true;
+    if (!localStorage.hasOwnProperty(CHECKBOX_STATE_KEY)) {
+      this.saveRadioState({
+        showRatingIconFg: false,
+        showRatingIconProfileFg: false,
+      });
+    }
   }
 
   saveRadioState(flags: LocalStorageState) {
