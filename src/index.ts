@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ac-hide-official-rating-icon
 // @namespace    https://atcoder.jp/
-// @version      1.01
+// @version      1.02
 // @description  AtCoder公式のレーティングアイコンを非表示にできるようにする拡張機能
 // @author       konchanksu
 // @license      MIT
